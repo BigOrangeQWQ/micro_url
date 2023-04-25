@@ -1,10 +1,6 @@
-pub mod errors;
-
 use diesel::prelude::*;
 use dotenvy::dotenv;
-use micro_url::errors::not_found_error;
-use micro_url::establish_connection;
-use micro_url::SqlitePool;
+use rand::Rng;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::Hasher;
 
@@ -16,11 +12,9 @@ use axum::{
     Json, Router,
 };
 
-use micro_url::models::NewLink;
-use micro_url::models::ShortURL;
-use rand::Rng;
-
-use crate::errors::internal_error;
+use micro_url::errors::{internal_error, not_found_error};
+use micro_url::models::{NewLink, ShortURL};
+use micro_url::sql::{establish_connection, SqlitePool};
 
 #[tokio::main]
 async fn main() {
@@ -84,4 +78,3 @@ async fn short_url(
 
     Ok(Json(acsii_url))
 }
-
