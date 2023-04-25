@@ -13,3 +13,10 @@ pub fn not_found_error<E>(err: E) -> (StatusCode, String)
     {
         (StatusCode::NOT_FOUND, err.to_string())
     }
+
+pub fn found_error<E>(err: E) -> (StatusCode, String) 
+    where
+        E: std::error::Error,
+    {
+        (StatusCode::EXPECTATION_FAILED, err.to_string())
+    }

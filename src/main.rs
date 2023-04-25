@@ -1,8 +1,6 @@
 use diesel::prelude::*;
 use dotenvy::dotenv;
 use rand::Rng;
-use std::collections::hash_map::DefaultHasher;
-use std::hash::Hasher;
 
 use axum::{
     extract::{Path, State},
@@ -12,7 +10,7 @@ use axum::{
     Json, Router,
 };
 
-use micro_url::errors::{internal_error, not_found_error};
+use micro_url::{errors::{internal_error, not_found_error, found_error}, generate_code};
 use micro_url::models::{NewLink, ShortURL};
 use micro_url::sql::{establish_connection, SqlitePool};
 
@@ -32,6 +30,8 @@ async fn main() {
         .await
         .unwrap();
 }
+
+
 
 //
 async fn redirect_url(
@@ -58,23 +58,12 @@ async fn short_url(
 
     let mut conn = sql.get().map_err(internal_error)?;
     let mut acsii_url = String::new();
-    let hasher = DefaultHasher::new();
-    for i in hasher.finish().to_ne_bytes().iter().take(6) {
-        if (i % 127).is_ascii_alphanumeric() {
-            print!("is");
-            acsii_url.push(i.clone() as char);
-        } else {
-            acsii_url.push((rand::thread_rng().gen_range(65..90) as u8) as char);
-        }
-    }
-    let new = NewLink {
-        salt: acsii_url.clone(),
-        link: payload.url,
-    };
+    generate_code(4, &mut acsii_url);
+    let new = NewLink {salt: acsii_url.clone(), link: payload.url};
     let _ = diesel::insert_into(links::table)
         .values(new)
         .execute(&mut conn)
-        .map_err(internal_error);
+        .map_err(found_error);
 
     Ok(Json(acsii_url))
 }
