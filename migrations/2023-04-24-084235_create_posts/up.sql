@@ -1,5 +1,3 @@
--- Your SQL goes here
-
 CREATE TABLE links (
   id INTEGER NOT NULL PRIMARY KEY,
   salt TEXT NOT NULL UNIQUE,
