@@ -4,12 +4,20 @@
 
 ## 获取短链
 
-POST 请求 /url/api {"url":"http://www.baidu.com"}
-返回一个 code
+- 请求方式: POST
+- 请求地址: /url
+- 请求参数: 
+```json
+{"url": "http://www.baidu.com"}
+```
+- 返回类型: string
 
 ## 短链跳转
 
-访问 /j/{code} 即可跳转至原页面
+- 请求方式: GET
+- 请求地址: /j/{code}
+- code 为获取短链时返回的 string
+
 
 ## TODO
 

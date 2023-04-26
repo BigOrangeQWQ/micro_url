@@ -20,7 +20,7 @@ async fn main() {
     let pool = establish_connection();
     let app = Router::new()
         .route("/", get(view))
-        .route("/url/api", post(short_url))
+        .route("/api", post(short_url))
         .route("/j/:qsalt", get(redirect_url))
         .with_state(pool);
 
