@@ -1,3 +1,12 @@
-# Orange Short URL
+# Orange Short Url(OSU)
 
-一个由 Axum + Sqlite 写成的短链生成响应API
+基于 axum + diesel 短链服务
+
+# 获取短链
+
+POST 请求 /url/api {"url":"http://www.baidu.com"}
+返回一个 code
+
+# 短链跳转
+
+访问 /j/{code} 即可跳转至原页面

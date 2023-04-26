@@ -1,6 +1,5 @@
 use diesel::prelude::*;
 use dotenvy::dotenv;
-use rand::Rng;
 
 use axum::{
     extract::{Path, State},
@@ -10,7 +9,7 @@ use axum::{
     Json, Router,
 };
 
-use micro_url::{errors::{internal_error, not_found_error, found_error}, generate_code};
+use micro_url::{errors::{internal_error, not_found_error, found_error}, GenCode};
 use micro_url::models::{NewLink, ShortURL};
 use micro_url::sql::{establish_connection, SqlitePool};
 
@@ -20,8 +19,9 @@ async fn main() {
 
     let pool = establish_connection();
     let app = Router::new()
-        .route("/surl/api", post(short_url))
-        .route("/mt/:qsalt", get(redirect_url))
+        .route("/", get(view))
+        .route("/url/api", post(short_url))
+        .route("/j/:qsalt", get(redirect_url))
         .with_state(pool);
 
     // run it with hyper on 0.0.0.0:3000
@@ -32,8 +32,6 @@ async fn main() {
 }
 
 
-
-//
 async fn redirect_url(
     Path(qsalt): Path<String>,
     State(sql): State<SqlitePool>,
@@ -57,8 +55,8 @@ async fn short_url(
     use micro_url::schema::links;
 
     let mut conn = sql.get().map_err(internal_error)?;
-    let mut acsii_url = String::new();
-    generate_code(4, &mut acsii_url);
+    let acsii_url = String::new().generate_code(4).to_owned();
+
     let new = NewLink {salt: acsii_url.clone(), link: payload.url};
     let _ = diesel::insert_into(links::table)
         .values(new)
@@ -66,4 +64,8 @@ async fn short_url(
         .map_err(found_error);
 
     Ok(Json(acsii_url))
+}
+
+async fn view() {
+
 }
